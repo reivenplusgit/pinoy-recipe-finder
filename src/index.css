@@ -1,4 +1,4 @@
-/* Reset and base styles */
+/* Reset and base styles for the entire application */
 * {
   margin: 0;
   padding: 0;
@@ -15,6 +15,7 @@ body {
   color: #333;
 }
 
+/* Ensure the React app container can fill the screen */
 #root {
   min-height: 100vh;
 }
