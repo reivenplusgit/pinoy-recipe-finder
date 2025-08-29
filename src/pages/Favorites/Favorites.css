@@ -1,0 +1,10 @@
+.favorites {
+  min-height: calc(100vh - 80px);
+  padding: 2rem 0;
+}
+
+.no-favorites {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
