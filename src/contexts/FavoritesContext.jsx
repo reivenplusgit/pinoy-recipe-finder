@@ -6,24 +6,39 @@ export const useFavorites = () => {
   return useContext(FavoritesContext);
 };
 
-export const FavoritesProvider = ({ children }) => {
-  const [favorites, setFavorites] = useState([]);
-
-  // Load favorites from localStorage on initial render
-  useEffect(() => {
+// This function runs ONLY once, on the initial render, to get the starting value.
+const getInitialFavorites = () => {
+  try {
     const storedFavorites = localStorage.getItem('recipeFavorites');
-    if (storedFavorites) {
-      setFavorites(JSON.parse(storedFavorites));
-    }
-  }, []);
+    // If favorites are found in localStorage, parse them, otherwise return an empty array.
+    return storedFavorites ? JSON.parse(storedFavorites) : [];
+  } catch (error) {
+    console.error("Failed to parse favorites from localStorage", error);
+    return [];
+  }
+};
 
-  // Save favorites to localStorage whenever they change
+export const FavoritesProvider = ({ children }) => {
+  // Initialize state by calling our function. This is the key change!
+  const [favorites, setFavorites] = useState(getInitialFavorites());
+
+  // This useEffect now ONLY handles SAVING to localStorage when favorites change.
   useEffect(() => {
-    localStorage.setItem('recipeFavorites', JSON.stringify(favorites));
+    try {
+      localStorage.setItem('recipeFavorites', JSON.stringify(favorites));
+    } catch (error) {
+      console.error("Failed to save favorites to localStorage", error);
+    }
   }, [favorites]);
 
   const addFavorite = (recipe) => {
-    setFavorites(prevFavorites => [...prevFavorites, recipe]);
+    // Add the new recipe, ensuring no duplicates
+    setFavorites(prevFavorites => {
+      if (prevFavorites.some(fav => fav.id === recipe.id)) {
+        return prevFavorites;
+      }
+      return [...prevFavorites, recipe];
+    });
   };
 
   const removeFavorite = (recipeId) => {
